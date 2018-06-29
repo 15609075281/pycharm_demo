@@ -24,7 +24,8 @@ SECRET_KEY = '4ygf^&*5y*6=9-y)6o*=nv*2ga+xv$#ry*4-js7m7v$zs2lq5@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.3.40']
+ALLOWED_HOSTS = "*"
 
 # Application definition
 
@@ -35,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -115,3 +118,42 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# 新增解决跨域
+MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',  # 注意顺序
+)
+# 跨域增加忽略
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+     'localhost:63343',' * '
+)
+# 默认值是全部:
+CORS_ORIGIN_WHITELIST = ()  # 或者定义允许的匹配路径正则表达式.
+CORS_ORIGIN_REGEX_WHITELIST = ('^(https?://)?(\w+.)?>google.com$',)  # 默认值:
+CORS_ORIGIN_REGEX_WHITELIST = ()
+
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'VIEW',
+)
+
+CORS_ALLOW_HEADERS = (
+    'XMLHttpRequest',
+    'X_FILENAME',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)

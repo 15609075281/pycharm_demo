@@ -1,34 +1,41 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse
-from django.shortcuts import render
-
 from untitled.phone_test import phone2
 from untitled.phone_test import phone_home
 from untitled.phone_test import python_deatils
-
-'''
-输入网址直接获取所有手机号
-'''
+from untitled.api import api
 
 
+# 输入网址直接获取所有手机号
 # 第一版获得手机号
 def phone(request):
     if request.method == 'POST':
         url = request.GET.get('url', '1')
+        print('Get Data:', request.GET)
+        callback_func = ''
+        print(callback_func)
         if url == '1':
-            return HttpResponse('什么也没有！！！')
+            data = []
+            print(api.get_api('什么也没有', 500, data))
+            return HttpResponse(callback_func + api.get_api('什么也没有', 500, data))
         else:
-            return HttpResponse(phone2.get_phone(url))
+            return HttpResponse(callback_func + phone2.get_all_url(url))
     else:
-        return HttpResponse(phone2.get_phone('https://yzt236364.atobo.com.cn/'))
+        url = request.GET.get('url', '1')
+        print('Get Data:', request.GET)
+        callback_func = request.GET.get('callback')
+        print(callback_func)
+        if url == '1':
+            data = []
+            print(api.get_api('什么也没有', 500, data))
+            return HttpResponse(callback_func + api.get_api('什么也没有', 500, data))
+        else:
+            return HttpResponse(callback_func + phone2.get_all_url(url))
 
 
-'''
-平台选者 0(阿土伯),1(),2
-'''
-
-
+# 平台选者 0(阿土伯),1(),2
 def one(request):
+    number = request.GET.get('number')
     if request.method == 'POST':
         print('POST请求')
         return HttpResponse(phone_home.get_html_url())
@@ -42,9 +49,3 @@ def two(request):
         return HttpResponse(python_deatils.get_mysql())
     else:
         print('GET请求')
-
-
-def test(request):
-    url = request.GET.get('name', '1')
-    phone2.get_all_url(url)
-    return HttpResponse('1')
