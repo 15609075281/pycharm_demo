@@ -18,8 +18,14 @@ from . import views
 from untitled.api import websocket_1
 
 urlpatterns = [
+
     url(r'^py_phone$', views.phone),
     url(r'^one$', views.one),
     url(r'^two$', views.two),
     url(r'^echo$', websocket_1.echo),
+    #获取平台标签
+    url(r'^get_tag$', views.get_tag),
+    #根据传入的标签获取所有数据
+    url(r'^get_platform$', websocket_1.get_platform),
+
 ]

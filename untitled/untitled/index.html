@@ -1,56 +1,168 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>django-websocket</title>
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript">//<![CDATA[
-    $(function () {
-        $('#connect_websocket').click(function () {
-            if (window.s) {
-                window.s.close()
-            }
-            /*创建socket连接*/
-            var socket = new WebSocket("ws://192.168.3.40:8000/echo");
-            socket.onopen = function () {
-                console.log('WebSocket open');//成功连接上Websocket
-            };
-            socket.onmessage = function (e) {
-                console.log('message: ' + e.data);//打印出服务端返回过来的数据
-                $('#messagecontainer').prepend('<p>' + e.data + '</p>');
-            };
-            // Call onopen directly if socket is already open
-            if (socket.readyState == WebSocket.OPEN) socket.onopen();
-            window.s = socket;
-        });
-        $('#send_message').click(function () {
-            //如果未连接到websocket
-            if (!window.s) {
-                alert("websocket未连接.");
-            } else {
-                window.s.send($('#message').val());//通过websocket发送数据
-            }
-        });
-        $('#close_websocket').click(function () {
-            if (window.s) {
-                window.s.close();//关闭websocket
-                console.log('websocket已关闭');
-            }
-        });
-
-    });
-    //]]></script>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
-<br>
-<input type="text" id="message" value="http://news.baidu.com"/>
-<button type="button" id="connect_websocket">连接 websocket</button>
-<button type="button" id="send_message">发送 message</button>
-<button type="button" id="close_websocket">关闭 websocket</button>
-<h1>Received Messages</h1>
-<div id="messagecontainer">
-
-</div>
+    <div id="app">
+        <div>
+            <el-input placeholder="请输入网址" v-model="webSite">
+                <template slot="prepend">网址：</template>
+                <el-button slot="append" icon="el-icon-search" @click="getInfo"></el-button>
+            </el-input>
+            <div>{{time}}</div>
+            <div>
+                <div v-for="item in arr">{{item.phone}}</div>
+            </div>
+        </div>
+    </div>
+    
+            <div><input type="file" onchange="document.getElementById('text').innerHTML=getFullPath(this)"/></div>
+            <div id="text"></div>
 </body>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script>
+        var ws = new WebSocket("ws://192.168.3.40:8000/echo");
+        ws.onopen = function()
+        {  console.log("open");
+        };
+        ws.onmessage = function(evt)
+        {
+            
+            console.log(evt.data);
+            console.log(typeof evt.data);
+            var ss=JSON.parse(evt.data);
+            console.log(ss);
+            app.infoList(ss);
+
+        };
+        ws.onclose = function(evt)
+        {
+            app.$data.flag=true;
+            app.$data.time="连接关闭，请刷新连接";
+          console.log("WebSocketClosed!");
+        };
+        ws.onerror = function(evt)
+        {
+            app.$data.flag=true;
+            app.$data.time=true;
+          console.log("WebSocketError!");
+        };
+
+        
+    var app=new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                webSite:'',
+                flag:false,
+                arr:[],
+                time:""
+            }
+        },
+        mounted(){
+            
+        },
+        methods:{
+            getInfo(){
+                let that=this;
+                this.flag=false;
+                this.setTimer();
+                this.arr=[];
+//                $.ajax({
+//                    type:"GET",
+//                    url:'http://192.168.3.40:8000/py_phone',
+//                    dataType:'jsonp',
+//                    data:{url:that.webSite},
+//                    success:function(response, status, xhr){
+//                        console.log(response);
+//                        if(response.msg=="500"){
+//                            that.flag=true;
+//                        }else{
+//                            that.arr=response.result;
+//                        }
+//                    },
+//                    error: function(xmlHttpRequest,textStatus,error){ 
+//                        console.log(xmlHttpRequest.status);
+//                        console.log(textStatus);
+//                    }
+//                })
+                ws.send(that.webSite);
+            },
+            infoList(obj){
+                this.flag=true;
+                if(obj.msg=="200"){
+                    this.arr=obj.result;
+                }else{
+                    this.arr={phone:"什么也没有查询到"};  
+                }
+            },
+            
+            setTimer(){
+                let that=this;
+                let s=0;
+                let m=0;
+                let h=0;
+                let sj = setInterval(function(){
+                        let str_s=s;
+                        let str_m=m;
+                        let str_h=h;
+                        if(s<10){
+                            str_s='0' + s;
+                        }
+                        if(m<10){
+                            str_m='0' + m;
+                        }
+                        if(h<10){
+                            str_h='0' + h;
+                        }
+                        let num=str_h + ":" + str_m + ":" + str_s;
+                        that.time=num;
+                        s++;
+                        if(s>59){
+                            s=0;
+                            m++;
+                        }
+                        if(m>59){
+                            s=0;
+                            h++;
+                        }
+                        if(that.flag){
+                            window.clearInterval(sj);
+                            that.time="结果如下：";
+                        }
+                    },1000);
+            },
+            
+        }
+    })
+        
+        
+        function getFullPath(obj)
+        {
+            if(obj)
+            {
+                if (window.navigator.userAgent.indexOf("MSIE")>=1)    //ie
+                {
+//                    obj.();
+                    return document.ion.createRange().text;
+                }
+                else if(window.navigator.userAgent.indexOf("Firefox")>=1)             //firefox
+                {
+                    if(obj.files)
+                    {
+                        return obj.files.item(0).getAsDataURL();
+                    }
+                    return obj.value;
+                }
+                return obj.value;
+            }
+        }
+  </script>
 </html>

@@ -11,6 +11,11 @@ import time
 re_r = '1[3|4|5|7|8]\d{9}'  # 1代表第一个号码为1;;;[3|4|5|7|8]第二位指定为这几个数；；；\d代表0~9，{9}循环9次
 arr_data_ = []
 
+# heards = {
+#     'Usser-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.17 Safari/537.36',
+#     'Cookie': 'SESSION=758cf29f-f90a-45b3-afb1-6c40b3503a79; JSESSIONID=B3795B795249A88CBD0CB60C6D77C046'
+# }
+
 
 # 对地址进行获取
 def get_phone(path, url):
@@ -43,6 +48,7 @@ def get_all_url(url_):
     arr_one_phone_url = []
     arr_two_phone_url = []
     if re_url.if_url(url_) == '1':
+        print('这个是首页地址', url_)
         url_12 = requests.get(url_)
         soup_1 = BeautifulSoup(url_12.text, 'html.parser')
         url_a = soup_1.find_all('a')

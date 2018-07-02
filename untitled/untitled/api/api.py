@@ -7,14 +7,23 @@ import json
 # msg::返回码
 # arr_::数组+object(字典)
 def get_api(content, msg, arr_):
-    print()
     data1 = {
         'content': content,
         'msg': msg,
         'result': arr_
     }
-    # return "(" + json.dumps(data1, indent=2, ensure_ascii=False).encode() + ");"
+    # websocket请求返回
     return json.dumps(data1, ensure_ascii=False).encode()
+
+def get_api_ordinary(content, msg, arr_):
+    data1 = {
+        'content': content,
+        'msg': msg,
+        'result': arr_
+    }
+    # 普通请求返回
+    return "(" + json.dumps(data1, indent=2, ensure_ascii=False) + ");"
+
 
 
 def get_api1(content, msg, arr_):

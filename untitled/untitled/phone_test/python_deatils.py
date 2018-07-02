@@ -10,6 +10,7 @@ import pymysql.cursors
 from untitled.phone_test import pymysql1
 import json
 from untitled.phone_test import phone_util
+from untitled.api import excls_csv
 
 name = 'body > div.contextf > div > div > div.cont-r > div:nth-of-type(1) > div > div > ul:nth-of-type(3) > li.card-right'
 telephone = 'body > div.contextf > div > div > div.cont-r > div:nth-of-type(1) > div > div > ul:nth-of-type(4) > li.card-right'
@@ -27,19 +28,21 @@ def get_name_phone(url):
     for var_name, var_telephone, var_phone in zip(var_name1, var_telephone1, var_phone1):
         data_two = {
             'name': var_name.text,
-        'telephone': var_telephone.text,
-        'phone': var_phone.text
+            'telephone': var_telephone.text,
+            'phone': var_phone.text
         }
         # arr_two.append(data_two)
         print('数据源', data_two)
-        set_insert(var_name.text, var_telephone.text, var_phone.text)
+        # set_insert(var_name.text, var_telephone.text, var_phone.text)
         # 保存数据到本地表格
         # set_name_phone(phone_util.set_data_time('name'), arr_two)
+        arr_name = ['name', 'telephone', 'phone']
+        data_two_1 = (var_name.text, var_telephone.text, var_phone.text)
+        excls_csv.if_file(phone_util.set_data_time('阿土伯', '详细数据'), arr_name, data_two_1)
         return data_two
 
-    # 存储姓名，手机号，座机号
 
-
+# 存储姓名，手机号，座机号
 def set_name_phone(folder, _arr1):
     if os.access(folder, os.F_OK):
         with open(folder, 'a+', newline='')as folders:
